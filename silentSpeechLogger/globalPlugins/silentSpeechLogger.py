@@ -24,7 +24,6 @@ oldSpeakSpelling = speech.speakSpelling
 data = ''
 history = []
 history_pos = 0
-path = 'C:\\Norland\\Logs\\NVDA\\'
 log = logging.getLogger('Speech')
 
 def append_to_history(string):
@@ -40,14 +39,14 @@ def mySpeak(sequence, *args, **kwargs):
     if text:
         data = text
         queueFunction(eventQueue, append_to_history, text)
-        oldSpeak(text)
+##        oldSpeak(text)
 
 def mySpeakSpelling(text, *args, **kwargs):
     global data
     if text:
         data = text
         queueFunction(eventQueue, appendSpelling_to_history, text)
-        oldSpeakSpelling(text)
+##        oldSpeakSpelling(text)
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     def __init__(self, *args, **kwargs):
@@ -57,7 +56,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         speech.speak = mySpeak
         oldSpeakSpelling = speech.speakSpelling
         speech.speakSpelling = mySpeakSpelling
-        fh = logging.FileHandler(path + 'transcription.log');        fh.setLevel(logging.INFO)        log.addHandler(fh)
+        logging.basicConfig(level=logging.INFO,
+            format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+            datefmt='%m-%d %H:%M',
+            filename='nvda_info_log.log',
+            filemode='w')
+        log = logging.getLogger('Speech')
+        fh = logging.FileHandler('transcription.log');
+        fh.setLevel(logging.INFO)
+        log.addHandler(fh)
 
     def terminate(self):
         speech.speak = oldSpeak
