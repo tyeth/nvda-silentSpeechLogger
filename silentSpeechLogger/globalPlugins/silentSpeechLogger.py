@@ -13,6 +13,7 @@ import tones
 import ui
 import io
 import logging
+from logging import Logger
 
 #from globalCommands import SCRCAT_SPEECH
 
@@ -24,11 +25,11 @@ data = ''
 history = []
 history_pos = 0
 path = 'C:\\Norland\\Logs\\NVDA\\'
-log = null
+log = logging.getLogger('Speech')
 
 def append_to_history(string):
     global log
-    log.INFO(string)
+    log.info(string)
 
 def appendSpelling_to_history(string):
     append_to_history("Spelt-Aloud:" + string)
@@ -39,23 +40,24 @@ def mySpeak(sequence, *args, **kwargs):
     if text:
         data = text
         queueFunction(eventQueue, append_to_history, text)
+        oldSpeak(text)
 
 def mySpeakSpelling(text, *args, **kwargs):
     global data
     if text:
         data = text
         queueFunction(eventQueue, appendSpelling_to_history, text)
+        oldSpeakSpelling(text)
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     def __init__(self, *args, **kwargs):
         super(GlobalPlugin, self).__init__(*args, **kwargs)
-        global oldSpeak, oldSpeakSpelling
+        global oldSpeak, oldSpeakSpelling, log
         oldSpeak = speech.speak
         speech.speak = mySpeak
         oldSpeakSpelling = speech.speakSpelling
         speech.speakSpelling = mySpeakSpelling
-
-        log = logging.getLogger('Speech')        fh = logging.FileHandler(path + 'transcription.log');        fh.setLevel(logging.DEBUG)        log.addHandler(fh)
+        fh = logging.FileHandler(path + 'transcription.log');        fh.setLevel(logging.INFO)        log.addHandler(fh)
 
     def terminate(self):
         speech.speak = oldSpeak
