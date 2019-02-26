@@ -57,12 +57,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         oldSpeakSpelling = speech.speakSpelling
         speech.speakSpelling = mySpeakSpelling
         logging.basicConfig(level=logging.INFO,
-            format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-            datefmt='%m-%d %H:%M',
+            format='%(asctime)s.%(msecs)03d %(name)-12s %(levelname)-8s %(message)s',
             filename='nvda_info_log.log',
             filemode='w')
         log = logging.getLogger('Speech')
         fh = logging.FileHandler('transcription.log');
+        formatter = logging.Formatter("%(asctime)s - %(message)s")
+        # add formatter to ch
+        fh.setFormatter(formatter)
         fh.setLevel(logging.INFO)
         log.addHandler(fh)
 
